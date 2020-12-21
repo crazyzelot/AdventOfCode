@@ -7,8 +7,9 @@ import (
 )
 
 func main() {
-	input := "0,3,6"
+	input := "1,12,0,20,8,16"
 	temp := strings.Split(input, ",")
+	inputLength := len(temp)
 	var game []int
 	spoken := make(map[int]int)
 	for i := range temp {
@@ -16,15 +17,37 @@ func main() {
 		game = append(game, tmp)
 	}
 	fmt.Println(game)
-	for i := 0; i < 6; i++ {
-		index := i % 3
-		fmt.Println("Number spoken", game[index])
-		_, found := spoken[game[index]]
-		if found {
-			
-		} else {
-			fmt.Println("here")
+	nextNumber := 0
+	for i := 0; i < 30000000; i++ {
+		index := i % inputLength
+		//fmt.Println(i)
+		_, found := spoken[nextNumber]
+		if i < inputLength {
+			//fmt.Println("Init")
 			spoken[game[index]] = i
+			if i == inputLength-1 {
+				nextNumber = 0
+			} else {
+				nextNumber = game[(index+1)%inputLength]
+			}
+
+		} else if !found {
+			//fmt.Println("NewNumber. The next number spoken should be 0.")
+			spoken[nextNumber] = i
+			nextNumber = 0
+		} else {
+			//fmt.Println("Number was found. Next number spoken will be", i, "-", spoken[nextNumber], "=", i-spoken[nextNumber])
+			tmp := i - spoken[nextNumber]
+			spoken[nextNumber] = i
+			nextNumber = tmp
 		}
+		if i > 29999990 {
+			fmt.Println("Number was found. Next number spoken will be", i, "-", spoken[nextNumber], "=", i-spoken[nextNumber])
+			fmt.Println(nextNumber)
+		}
+		//bufio.NewReader(os.Stdin).ReadBytes('\n')
+
 	}
+
+	fmt.Println(nextNumber)
 }
